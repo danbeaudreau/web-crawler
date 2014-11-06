@@ -1,0 +1,16 @@
+   {
+      "name": "webspider",
+      "main": "server.js",
+      "dependencies": {
+        "express" : "~4.5.1",
+        "mongoose" : "~3.8.0",
+        "body-parser" : "~1.4.2",
+        "ejs" : "latest",
+        "fs" : "latest",
+        "request" : "latest",
+		    "async" : "latest",
+        "htmlparser2" : "latest",
+        "url" : "latest",
+        "mkdirp" : "latest"
+      }
+    }
