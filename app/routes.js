@@ -58,6 +58,7 @@ module.exports = function(router) {
           });
           parser.write(body);
           parser.end();
+          res.send({path: requestPath})
       })
     })(requestPath);
   });
