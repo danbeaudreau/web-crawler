@@ -8,24 +8,26 @@ app.controller("indexController", function ($scope, $http) {
 			if(!$scope.page || !$scope.domain || !$scope.localdirectory) {
 				return false;
 			}
-
+			if(!$scope.validateURL($scope.page)) {
+				return false;
+			}
 			$http.post('/crawl', {page: $scope.page, domainToIndex: $scope.domain, indexedDirectory: $scope.localdirectory }).success(function(data, status, headers, config){
 				$scope.indexedFiles.push(data.path);
-			}
+			});
 		};
 
 		$scope.validateURL = function(url) {
-			if(url.indexOf('.') === -1){
-				return false;
+			var checkDot = checkIfPartOfString(url, ".");
+			var checkHttp = checkIfPartOfString(url, "http://");
+			if(checkDot && checkHttp) {
+				return true;
 			}
-			if(url.indexOf("http://") === -1 ){
-				return false;
-			}
-			return true;
+			return false;
 		};
 
-		$scope.checkDomains = function(page, domain) {
-			if(page.indexOf(domain) === -1) {
+
+		function checkIfPartOfString(string, text){
+			if(string.indexOf(text) === -1){
 				return false;
 			}
 			return true;
