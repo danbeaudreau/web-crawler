@@ -26,5 +26,10 @@ namespace WebCrawler
             }
         }
 
+        //public bool checkUrlDomain(string url, string domain)
+        //{
+            
+        //}
+
     }
 }

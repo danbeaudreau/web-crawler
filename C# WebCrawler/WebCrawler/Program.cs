@@ -42,7 +42,7 @@ namespace WebCrawler
             }
 
             Crawler webCrawler = new Crawler(startingPage, domainInformation, localDirectory);
-            //webCrawler.Crawl();
+            webCrawler.CrawlFirstPage();
 
             Console.WriteLine("Web Crawler terminated.");
             Console.ReadLine();
