@@ -24,13 +24,13 @@ namespace WebCrawler
             URLManager urlManager = new URLManager();
             FileManager fileManager = new FileManager();
 
-            if(!urlManager.validateURL(startingPage))
+            if(!urlManager.isValidURL(startingPage))
             {
                 Console.WriteLine("Error, the starting page URL is not a valid HTTP or HTTPS URL.");
                 Console.ReadLine();
 
             }
-            if(!urlManager.validateURL(domainInformation))
+            if(!urlManager.isValidURL(domainInformation))
             {
                 Console.WriteLine("Error, the domain URL is not a valid HTTP or HTTPS URL.");
                 Console.ReadLine();

@@ -4,11 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Security;
 using System.Security.Permissions;
+using System.IO;
 
 namespace WebCrawler
 {
     class FileManager
     {
+
+        public void pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
+        {
+            string uriAbsolutePath = uri.AbsolutePath.Replace("/", "\\");
+            if (uriAbsolutePath == "\\" || uriAbsolutePath == "")
+            {
+                uriAbsolutePath = "\\index";
+            }
+            string pipedPath = localDirectory.Directory + localDirectory.Name + "\\" + uri.Host + uriAbsolutePath;
+            if (pathIsWellFormed(pipedPath))
+            {
+                string directory = localDirectory.Directory + localDirectory.Name + "\\" + uri.Host + uriAbsolutePath.Substring(0, uriAbsolutePath.LastIndexOf("\\"));
+                Directory.CreateDirectory(directory);
+                if (pathExists(directory) && pathHasWriteAccess(directory))
+                {
+                    using (FileStream fs = File.Create(pipedPath + ".html", 1024))
+                    {
+                        Byte[] info = new UTF8Encoding(true).GetBytes(pageHtmlAsString);
+                        fs.Write(info, 0, info.Length);
+                    }
+                }
+            }
+        }
+
+        
         public bool validateFilePath(string path)
         {
             if (pathIsWellFormed(path) && pathExists(path) && pathHasWriteAccess(path))

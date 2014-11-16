@@ -7,7 +7,7 @@ namespace WebCrawler
 {
     class URLManager
     {
-        public bool validateURL(string url)
+        public bool isValidURL(string url)
         {
             Uri parsedURI = null;
             bool isParsedAsUri = Uri.TryCreate(url, UriKind.Absolute, out parsedURI);
@@ -26,10 +26,25 @@ namespace WebCrawler
             }
         }
 
-        //public bool checkUrlDomain(string url, string domain)
-        //{
-            
-        //}
+        public bool verifyURLIsPartOfDomain(string urlToCheckAsString, Uri domain)
+        {
+            if (isValidURL(urlToCheckAsString)) 
+            {
+                Uri urlToCheck = new Uri(urlToCheckAsString);
+                if (urlToCheck.Host == domain.Host)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else 
+            {
+                return false;
+            }
+        }
 
     }
 }
