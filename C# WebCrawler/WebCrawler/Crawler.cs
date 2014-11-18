@@ -15,10 +15,8 @@ namespace WebCrawler
         private Uri domainInformation;
         private FileInfo localDirectory;
         private SemaphoreSlim semaphore;
-        private DataParser dataParser;
-        private ConcurrentQueue<Uri> queueOfUrisToCrawl;
         private ConcurrentDictionary<string,string> dictionaryOfCrawledFiles;
-        private const int maxCount = 10000; 
+        public ConcurrentQueue<Uri> queueOfUrisToCrawl;
 
         public Crawler(string startingPageString, string domainInformationString, string localDirectoryString)
         {
@@ -26,27 +24,29 @@ namespace WebCrawler
             startingPage = new Uri(startingPageString);
             domainInformation = new Uri(domainInformationString);
             localDirectory = new FileInfo(localDirectoryString);
-            dataParser = new DataParser();
             queueOfUrisToCrawl = new ConcurrentQueue<Uri>();
             dictionaryOfCrawledFiles = new ConcurrentDictionary<string,string>();
         }
-        public void CrawlFirstPage()
+        public bool CrawlFirstPage()
         {
             Crawl(startingPage);
             if (queueOfUrisToCrawl.Count != 0)
             {
                 dictionaryOfCrawledFiles[startingPage.AbsoluteUri] = "success";
-                ManageConcurrentCrawling();
+                return true;
             }
             else 
             {
                 Console.WriteLine("No links were found on the starting page!");
                 Console.ReadLine();
+                return false;
             }
         }
 
-        public void Crawl (Uri uri)
+        public void Crawl (object objectUri)
         {
+            //this cast is required because ParameterizedThreadStart only takes a delegate with one object parameter
+            Uri uri = (Uri)objectUri; 
             if (!dictionaryOfCrawledFiles.ContainsKey(uri.AbsoluteUri))
             {
                 dictionaryOfCrawledFiles[uri.AbsoluteUri] = "unattempted";
@@ -58,21 +58,15 @@ namespace WebCrawler
                 client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
                 Stream htmlData = client.OpenRead(uri.AbsoluteUri);
                 StreamReader reader = new StreamReader(htmlData);
-                FileManager fm = new FileManager();
+                FileManager fileManager = new FileManager();
+                DataParser dataParser = new DataParser();
                 string pageHtmlAsString = reader.ReadToEnd();
-                fm.pipeHtmlDataToLocalFile(pageHtmlAsString, uri, localDirectory);
+                fileManager.pipeHtmlDataToLocalFile(pageHtmlAsString, uri, localDirectory);
                 dataParser.extractLinksFromHTML(pageHtmlAsString, uri, ref queueOfUrisToCrawl);
                 htmlData.Close();
                 reader.Close();
             }
         }
 
-
-        public void ManageConcurrentCrawling()
-        {
-            semaphore = new SemaphoreSlim(0, maxCount);
-            //to-do implement concurrent crawling
-
-        }
     }
 }

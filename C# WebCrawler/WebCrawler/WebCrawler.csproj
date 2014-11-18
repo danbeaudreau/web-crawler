@@ -48,6 +48,7 @@
     <Compile Include="FileManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThreadPoolManager.cs" />
     <Compile Include="URLManager.cs" />
   </ItemGroup>
   <ItemGroup>

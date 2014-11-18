@@ -42,9 +42,12 @@ namespace WebCrawler
             }
 
             Crawler webCrawler = new Crawler(startingPage, domainInformation, localDirectory);
-            webCrawler.CrawlFirstPage();
-
-            Console.WriteLine("Web Crawler terminated.");
+            bool firstPageSuccessful = webCrawler.CrawlFirstPage();
+            if (firstPageSuccessful)
+            {
+                ThreadPoolManager.ManageThreadPool(webCrawler);
+            }
+            Console.WriteLine("Web Crawler execution terminated.");
             Console.ReadLine();
 
         }
