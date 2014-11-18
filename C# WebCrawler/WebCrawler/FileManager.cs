@@ -14,9 +14,9 @@ namespace WebCrawler
         public void pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
         {
             string uriAbsolutePath = uri.AbsolutePath.Replace("/", "\\");
-            if (uriAbsolutePath == "\\" || uriAbsolutePath == "")
+            if (uriAbsolutePath.Substring(uriAbsolutePath.LastIndexOf('\\') + 1) == "")
             {
-                uriAbsolutePath = "\\index";
+                uriAbsolutePath += "index";
             }
             string pipedPath = localDirectory.Directory + localDirectory.Name + "\\" + uri.Host + uriAbsolutePath;
             if (pathIsWellFormed(pipedPath))
