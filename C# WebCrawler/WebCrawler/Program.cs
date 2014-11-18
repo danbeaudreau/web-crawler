@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Configuration;
 
 namespace WebCrawler
 {
@@ -45,6 +46,7 @@ namespace WebCrawler
             bool firstPageSuccessful = webCrawler.CrawlFirstPage();
             if (firstPageSuccessful)
             {
+                ThreadPoolManager.SetMaxThreads();
                 ThreadPoolManager.ManageThreadPool(webCrawler);
             }
             Console.WriteLine("Web Crawler execution terminated.");
