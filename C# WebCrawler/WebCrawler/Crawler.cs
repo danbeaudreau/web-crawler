@@ -14,7 +14,6 @@ namespace WebCrawler
         private Uri startingPage;
         private Uri domainInformation;
         private FileInfo localDirectory;
-        private SemaphoreSlim semaphore;
         private ConcurrentDictionary<string,string> dictionaryOfCrawledFiles;
         public ConcurrentQueue<Uri> queueOfUrisToCrawl;
 
@@ -54,17 +53,31 @@ namespace WebCrawler
 
             if(dictionaryOfCrawledFiles[uri.AbsoluteUri] != "success")
             {
-                WebClient client = new WebClient();
-                client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-                Stream htmlData = client.OpenRead(uri.AbsoluteUri);
-                StreamReader reader = new StreamReader(htmlData);
-                FileManager fileManager = new FileManager();
-                DataParser dataParser = new DataParser();
-                string pageHtmlAsString = reader.ReadToEnd();
-                fileManager.pipeHtmlDataToLocalFile(pageHtmlAsString, uri, localDirectory);
-                dataParser.extractLinksFromHTML(pageHtmlAsString, uri, ref queueOfUrisToCrawl);
-                htmlData.Close();
-                reader.Close();
+                try
+                {
+                    WebClient client = new WebClient();
+                    client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+                    Stream htmlData = client.OpenRead(uri.AbsoluteUri);
+                    StreamReader reader = new StreamReader(htmlData);
+                    FileManager fileManager = new FileManager();
+                    DataParser dataParser = new DataParser();
+                    string pageHtmlAsString = reader.ReadToEnd();
+                    fileManager.pipeHtmlDataToLocalFile(pageHtmlAsString, uri, localDirectory);
+                    dataParser.extractLinksFromHTML(pageHtmlAsString, uri, ref queueOfUrisToCrawl);
+                    htmlData.Close();
+                    reader.Close();
+                }
+                catch (WebException webException)
+                {
+                    if (((HttpWebResponse)webException.Response).StatusCode == HttpStatusCode.NotFound)
+                    {
+                        dictionaryOfCrawledFiles[uri.AbsoluteUri] = "404";
+                    }
+                    else
+                    {
+                        dictionaryOfCrawledFiles[uri.AbsoluteUri] = "error";
+                    }
+                }
             }
         }
 
