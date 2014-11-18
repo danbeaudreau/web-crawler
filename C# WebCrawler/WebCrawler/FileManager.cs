@@ -11,7 +11,7 @@ namespace WebCrawler
     class FileManager
     {
 
-        public void pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
+        public string pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
         {
             string uriAbsolutePath = uri.AbsolutePath.Replace("/", "\\");
             if (uriAbsolutePath.Substring(uriAbsolutePath.LastIndexOf('\\') + 1) == "")
@@ -25,13 +25,23 @@ namespace WebCrawler
                 Directory.CreateDirectory(directory);
                 if (pathExists(directory) && pathHasWriteAccess(directory))
                 {
-                    using (FileStream fs = File.Create(pipedPath + ".html", 1024))
+                    try
                     {
-                        Byte[] info = new UTF8Encoding(true).GetBytes(pageHtmlAsString);
-                        fs.Write(info, 0, info.Length);
+                        using (FileStream fs = File.Create(pipedPath + ".html", 1024))
+                        {
+                            Byte[] info = new UTF8Encoding(true).GetBytes(pageHtmlAsString);
+                            fs.Write(info, 0, info.Length);
+                        }
+                        return "success";
+                    }
+                    catch (IOException)
+                    {
+                        return "ioerror";
+
                     }
                 }
             }
+            return "invalidpath";
         }
 
         
