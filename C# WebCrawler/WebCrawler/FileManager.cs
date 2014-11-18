@@ -11,7 +11,7 @@ namespace WebCrawler
     class FileManager
     {
 
-        public string pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
+        public Constants.DownloadStatus pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
         {
             string uriAbsolutePath = uri.AbsolutePath.Replace("/", "\\");
             if (uriAbsolutePath.Substring(uriAbsolutePath.LastIndexOf('\\') + 1) == "")
@@ -32,16 +32,16 @@ namespace WebCrawler
                             Byte[] info = new UTF8Encoding(true).GetBytes(pageHtmlAsString);
                             fs.Write(info, 0, info.Length);
                         }
-                        return "success";
+                        return Constants.DownloadStatus.Success;
                     }
                     catch (IOException)
                     {
-                        return "ioerror";
+                        return Constants.DownloadStatus.FileWriteError;
 
                     }
                 }
             }
-            return "invalidpath";
+            return Constants.DownloadStatus.FileWriteError;
         }
 
         

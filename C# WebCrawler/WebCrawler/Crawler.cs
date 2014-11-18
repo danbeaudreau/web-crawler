@@ -14,7 +14,7 @@ namespace WebCrawler
         private Uri startingPage;
         private Uri domainInformation;
         private FileInfo localDirectory;
-        private ConcurrentDictionary<string,string> dictionaryOfCrawledFiles;
+        private ConcurrentDictionary<string, Constants.DownloadStatus> dictionaryOfCrawledFiles;
         public ConcurrentQueue<Uri> queueOfUrisToCrawl;
 
         public Crawler(string startingPageString, string domainInformationString, string localDirectoryString)
@@ -24,14 +24,14 @@ namespace WebCrawler
             domainInformation = new Uri(domainInformationString);
             localDirectory = new FileInfo(localDirectoryString);
             queueOfUrisToCrawl = new ConcurrentQueue<Uri>();
-            dictionaryOfCrawledFiles = new ConcurrentDictionary<string,string>();
+            dictionaryOfCrawledFiles = new ConcurrentDictionary<string, Constants.DownloadStatus>();
         }
         public bool CrawlFirstPage()
         {
             Crawl(startingPage);
             if (queueOfUrisToCrawl.Count != 0)
             {
-                dictionaryOfCrawledFiles[startingPage.AbsoluteUri] = "success";
+                dictionaryOfCrawledFiles[startingPage.AbsoluteUri] = Constants.DownloadStatus.Success;
                 return true;
             }
             else 
@@ -48,10 +48,10 @@ namespace WebCrawler
             Uri uri = (Uri)objectUri; 
             if (!dictionaryOfCrawledFiles.ContainsKey(uri.AbsoluteUri))
             {
-                dictionaryOfCrawledFiles[uri.AbsoluteUri] = "unattempted";
+                dictionaryOfCrawledFiles[uri.AbsoluteUri] = Constants.DownloadStatus.Unattempted;
             }
 
-            if(dictionaryOfCrawledFiles[uri.AbsoluteUri] != "success")
+            if (dictionaryOfCrawledFiles[uri.AbsoluteUri] != Constants.DownloadStatus.Success)
             {
                 try
                 {
@@ -71,11 +71,11 @@ namespace WebCrawler
                 {
                     if (((HttpWebResponse)webException.Response).StatusCode == HttpStatusCode.NotFound)
                     {
-                        dictionaryOfCrawledFiles[uri.AbsoluteUri] = "404";
+                        dictionaryOfCrawledFiles[uri.AbsoluteUri] = Constants.DownloadStatus.NotFound;
                     }
                     else
                     {
-                        dictionaryOfCrawledFiles[uri.AbsoluteUri] = "error";
+                        dictionaryOfCrawledFiles[uri.AbsoluteUri] = Constants.DownloadStatus.GeneralError;
                     }
                 }
             }
