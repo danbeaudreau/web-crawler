@@ -9,6 +9,10 @@ namespace WebCrawler
 {
     class ThreadPoolManager
     {
+
+        public static int numberOfJobs = 0;
+        public static int numberOfCompletedJobs = 0;
+        
         public static void SetMaxThreads()
         {
             string numberOfWorkerThreadsAsString = ConfigurationManager.AppSettings["WORKER_THREAD_COUNT"];
@@ -28,13 +32,14 @@ namespace WebCrawler
         
         public static void ManageThreadPool(Crawler crawler) 
         {
-            while (crawler.queueOfUrisToCrawl.Count != 0)
+            while (crawler.queueOfUrisToCrawl.Count != 0 || numberOfJobs != numberOfCompletedJobs)
             {
                 Uri uriToCrawl;
                 bool dequeued = crawler.queueOfUrisToCrawl.TryDequeue(out uriToCrawl);
                 if(dequeued)
                 {
-                   ThreadPool.QueueUserWorkItem(x => crawler.Crawl(uriToCrawl));
+                    numberOfJobs++;
+                    ThreadPool.QueueUserWorkItem(x => { crawler.Crawl(uriToCrawl); numberOfCompletedJobs++; });
                 }
             }
         }
