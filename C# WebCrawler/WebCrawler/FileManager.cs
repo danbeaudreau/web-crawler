@@ -11,7 +11,7 @@ namespace WebCrawler
     class FileManager
     {
 
-        public Constants.DownloadStatus pipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
+        public Constants.DownloadStatus PipeHtmlDataToLocalFile(string pageHtmlAsString, Uri uri, FileInfo localDirectory)
         {
             string uriAbsolutePath = uri.AbsolutePath.Replace("/", "\\");
             if (uriAbsolutePath.Substring(uriAbsolutePath.LastIndexOf('\\') + 1) == "")
@@ -19,11 +19,11 @@ namespace WebCrawler
                 uriAbsolutePath += "index";
             }
             string pipedPath = localDirectory.Directory + localDirectory.Name + "\\" + uri.Host + uriAbsolutePath;
-            if (pathIsWellFormed(pipedPath))
+            if (PathIsWellFormed(pipedPath))
             {
                 string directory = localDirectory.Directory + localDirectory.Name + "\\" + uri.Host + uriAbsolutePath.Substring(0, uriAbsolutePath.LastIndexOf("\\"));
                 Directory.CreateDirectory(directory);
-                if (pathExists(directory) && pathHasWriteAccess(directory))
+                if (PathExists(directory) && PathHasWriteAccess(directory))
                 {
                     try
                     {
@@ -45,9 +45,9 @@ namespace WebCrawler
         }
 
         
-        public bool validateFilePath(string path)
+        public bool ValidateFilePath(string path)
         {
-            if (pathIsWellFormed(path) && pathExists(path) && pathHasWriteAccess(path))
+            if (PathIsWellFormed(path) && PathExists(path) && PathHasWriteAccess(path))
             {
                 return true;
             }
@@ -57,7 +57,7 @@ namespace WebCrawler
             }
         }
 
-        private bool pathIsWellFormed(string path)
+        private bool PathIsWellFormed(string path)
         {
             bool isValidPath = false;
             try
@@ -72,12 +72,12 @@ namespace WebCrawler
             return isValidPath;
         }
 
-        private bool pathExists(string path)
+        private bool PathExists(string path)
         {
             return System.IO.Directory.Exists(path);
         }
 
-        private bool pathHasWriteAccess(string path)
+        private bool PathHasWriteAccess(string path)
         {
             PermissionSet permissionSet = new PermissionSet(PermissionState.None);
             FileIOPermission writePermission = new FileIOPermission(FileIOPermissionAccess.Write, path);

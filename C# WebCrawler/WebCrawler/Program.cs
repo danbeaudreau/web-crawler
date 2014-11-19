@@ -25,18 +25,18 @@ namespace WebCrawler
             URLManager urlManager = new URLManager();
             FileManager fileManager = new FileManager();
 
-            if(!urlManager.isValidURL(startingPage))
+            if(!urlManager.IsValidURL(startingPage))
             {
                 Console.WriteLine("Error, the starting page URL is not a valid HTTP or HTTPS URL.");
                 Console.ReadLine();
 
             }
-            if(!urlManager.isValidURL(domainInformation))
+            if(!urlManager.IsValidURL(domainInformation))
             {
                 Console.WriteLine("Error, the domain URL is not a valid HTTP or HTTPS URL.");
                 Console.ReadLine();
             }
-            if (!fileManager.validateFilePath(localDirectory))
+            if (!fileManager.ValidateFilePath(localDirectory))
             {
                 Console.WriteLine("Error, the local directory is not valid or the application does not have write access.");
                 Console.ReadLine();

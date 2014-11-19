@@ -62,8 +62,8 @@ namespace WebCrawler
                     FileManager fileManager = new FileManager();
                     DataParser dataParser = new DataParser();
                     string pageHtmlAsString = reader.ReadToEnd();
-                    dictionaryOfCrawledFiles[uri.AbsoluteUri] = fileManager.pipeHtmlDataToLocalFile(pageHtmlAsString, uri, localDirectory);
-                    dataParser.extractLinksFromHTML(pageHtmlAsString, uri, ref queueOfUrisToCrawl);
+                    dictionaryOfCrawledFiles[uri.AbsoluteUri] = fileManager.PipeHtmlDataToLocalFile(pageHtmlAsString, uri, localDirectory);
+                    dataParser.ExtractLinksFromHTML(pageHtmlAsString, uri, ref queueOfUrisToCrawl);
                     htmlData.Close();
                     reader.Close();
                 }

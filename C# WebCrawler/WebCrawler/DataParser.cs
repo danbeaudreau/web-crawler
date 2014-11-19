@@ -17,16 +17,16 @@ namespace WebCrawler
             urlManager = new URLManager();
         }
 
-        public void extractLinksFromHTML(string pageHtmlAsString, Uri domainInformation, ref ConcurrentQueue<Uri> queueOfUrisToCrawl)
+        public void ExtractLinksFromHTML(string pageHtmlAsString, Uri domainInformation, ref ConcurrentQueue<Uri> queueOfUrisToCrawl)
         {
             MatchCollection matchCollection = Regex.Matches(pageHtmlAsString, hrefRegexPattern);
             foreach (Match match in matchCollection)
             {
-                if(urlManager.isValidURL(match.Groups[1].Value))
+                if(urlManager.IsValidURL(match.Groups[1].Value))
                 {
                     queueOfUrisToCrawl.Enqueue(new Uri(match.Groups[1].Value));
                 }
-                else if (urlManager.isValidURL(domainInformation.AbsoluteUri.Substring(0, domainInformation.AbsoluteUri.LastIndexOf(domainInformation.AbsolutePath)) + match.Groups[1].Value)) 
+                else if (urlManager.IsValidURL(domainInformation.AbsoluteUri.Substring(0, domainInformation.AbsoluteUri.LastIndexOf(domainInformation.AbsolutePath)) + match.Groups[1].Value)) 
                 {
                     queueOfUrisToCrawl.Enqueue(new Uri(domainInformation.AbsoluteUri.Substring(0, domainInformation.AbsoluteUri.LastIndexOf(domainInformation.AbsolutePath)) + match.Groups[1].Value));
                 }
