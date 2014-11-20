@@ -14,6 +14,7 @@ namespace WebCrawler
         private Uri startingPage;
         private Uri domainInformation;
         private FileInfo localDirectory;
+        private ConcurrentDictionary<string, Constants.RobotsTxtStatus> dictionaryOfCrawledDomains; 
         private ConcurrentDictionary<string, Constants.DownloadStatus> dictionaryOfCrawledFiles;
         public ConcurrentQueue<Uri> queueOfUrisToCrawl;
 
@@ -24,6 +25,7 @@ namespace WebCrawler
             domainInformation = new Uri(domainInformationString);
             localDirectory = new FileInfo(localDirectoryString);
             queueOfUrisToCrawl = new ConcurrentQueue<Uri>();
+            dictionaryOfCrawledDomains = new ConcurrentDictionary<string, Constants.RobotsTxtStatus>();
             dictionaryOfCrawledFiles = new ConcurrentDictionary<string, Constants.DownloadStatus>();
         }
         public bool CrawlFirstPage()
@@ -51,12 +53,17 @@ namespace WebCrawler
                 dictionaryOfCrawledFiles[uri.AbsoluteUri] = Constants.DownloadStatus.Unattempted;
             }
 
-            if (dictionaryOfCrawledFiles[uri.AbsoluteUri] != Constants.DownloadStatus.Success)
+            if (!dictionaryOfCrawledDomains.ContainsKey(uri.Host))
+            {
+                dictionaryOfCrawledDomains[uri.Host] = DownloadRobotsTxt(uri);
+            }
+
+            if (dictionaryOfCrawledFiles[uri.AbsoluteUri] == Constants.DownloadStatus.Unattempted && dictionaryOfCrawledDomains[uri.Host] != Constants.RobotsTxtStatus.Unattempted)
             {
                 try
                 {
                     WebClient client = new WebClient();
-                    client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705; WebCrawlerBeta)");
+                    client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705; AsyncWebCrawler)");
                     Stream htmlData = client.OpenRead(uri.AbsoluteUri);
                     StreamReader reader = new StreamReader(htmlData);
                     FileManager fileManager = new FileManager();
@@ -79,6 +86,37 @@ namespace WebCrawler
                     }
                 }
             }
+        }
+
+        public Constants.RobotsTxtStatus DownloadRobotsTxt(Uri uri) 
+        {
+            try
+            {       
+                WebClient client = new WebClient();
+                client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705; AsyncWebCrawler)");
+                Stream robotsStream = client.OpenRead(uri.AbsoluteUri.Substring(0, uri.AbsoluteUri.LastIndexOf(uri.AbsolutePath)) + "/robots.txt");
+                StreamReader reader = new StreamReader(robotsStream);
+                FileManager fileManager = new FileManager();
+                DataParser dataParser = new DataParser();
+                string robotsAsString = reader.ReadToEnd();
+                dataParser.ExtractPathsFromRobotsDotTxt(robotsAsString);
+                robotsStream.Close();
+                reader.Close();
+                return Constants.RobotsTxtStatus.Success;
+
+            }
+            catch (WebException webException)
+            {
+                if (((HttpWebResponse)webException.Response).StatusCode == HttpStatusCode.NotFound)
+                {
+                    return Constants.RobotsTxtStatus.NotFound;
+                }
+                else
+                {
+                    return Constants.RobotsTxtStatus.GeneralError;
+                }
+            }
+
         }
 
     }

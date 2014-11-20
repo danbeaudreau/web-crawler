@@ -16,5 +16,14 @@ namespace WebCrawler
             NotFound,
             GeneralError
         };
+
+        public enum RobotsTxtStatus
+        {
+            Success,
+            ParseError,
+            NotFound,
+            Unattempted,
+            GeneralError
+        }
     }
 }

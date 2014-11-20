@@ -10,6 +10,8 @@ namespace WebCrawler
     class DataParser
     {
         private string hrefRegexPattern = @"href\s*=\s*['|""]([\w+://.]*)['|""]";
+        private string matchAllUserAgentsRegexPattern = @"(?<=User-agent:)\s+\*(.*)(?:User-agent|$)"; //this should work but it isn't in some cases[?]
+        private string matchAllDisallows = @"(?:(?:Disallow:\s+(\/.*?\\n))+)";
         private URLManager urlManager;
 
         public DataParser()
@@ -32,6 +34,13 @@ namespace WebCrawler
                 }
                 Console.WriteLine(match.Groups[1].Value);
             }
+        }
+
+        public void ExtractPathsFromRobotsDotTxt(string robotsDotTxtAsString)
+        {
+            Match excludedUrlsForAllBrowsers = Regex.Match(robotsDotTxtAsString, matchAllUserAgentsRegexPattern);
+            MatchCollection disallowedUrls = Regex.Matches(excludedUrlsForAllBrowsers.Groups[1].Value, matchAllDisallows);
+
         }
     }
 }
